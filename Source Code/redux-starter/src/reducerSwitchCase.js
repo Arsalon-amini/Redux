@@ -1,8 +1,10 @@
+import * as actions from "./actionTypes";
+
 let lastId = 0;
 
 export default function reducer(state = [], action) {
   switch (action.type) {
-    case "bugAdded":
+    case actions.BUG_ADDED:
       return [
         ...state, //copy all bugs in current state
         {
@@ -11,11 +13,9 @@ export default function reducer(state = [], action) {
           resolved: false,
         },
       ];
-    case "bugRemoved":
+    case actions.BUG_REMOVED:
       return state.filter((bug) => bug.id !== action.payload.id); //creates new array, without bug w/ given ID
     default:
       return state;
   }
 }
-
-
