@@ -40,5 +40,5 @@ const added = [
 //removing
 const removed = numbers.filter((n) => n !== 2);
 
-//updating
+//updating (replace)
 const updated = numbers.map((n) => (n === 2 ? 20 : n)); //returns a new array, subst. 20 for any value = 2
