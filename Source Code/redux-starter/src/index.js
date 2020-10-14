@@ -1,6 +1,6 @@
 import store from "./store";
 
-store.subscribe(() => {
+const unsubscribe = store.subscribe(() => {
   console.log("Store changed!", store.getState()); //called everytime state of store changes
 });
 
@@ -10,6 +10,8 @@ store.dispatch({
     description: "Bug1",
   },
 });
+
+unsubscribe();
 
 store.dispatch({
   type: "bugRemoved",
