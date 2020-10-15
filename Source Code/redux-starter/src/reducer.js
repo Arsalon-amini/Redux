@@ -15,13 +15,11 @@ export default function reducer(state = [], action) {
       ];
     case actions.BUG_REMOVED:
       return state.filter((bug) => bug.id !== action.payload.id); //creates new array, without bug w/ given ID
-      case actions.BUG_RESOLVED:
-        return state.map((bug) =>
-          bug.id !== action.payload.id ? bug : { ...bug, resolved: true }
-        );
-      default:
-        return state;
-    }
+    case actions.BUG_RESOLVED:
+      return state.map((bug) =>
+        bug.id !== action.payload.id ? bug : { ...bug, resolved: true }
+      );
+    default:
+      return state;
+  }
 }
-
-
