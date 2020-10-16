@@ -1,10 +1,12 @@
-import {createStore} from 'redux';
-import reducer from './reducer'; 
+import { createStore } from "redux";
+import reducer from "./reducer";
 
+const store = createStore(
+  reducer,
+  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+);
 
-const store = createStore(reducer);
-
-export default store; 
+export default store;
 
 //store object (simplified case) - array of bug objects
 // [
