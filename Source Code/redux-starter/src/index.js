@@ -10,6 +10,7 @@ import { projectAdded, projectRemoved } from "./store/projects";
 
 const store = configureStore();
 
-store.dispatch((dispatch, getState) => {
-  dispatch({ type: "bugsRecieved", bugs: [1, 2, 3] }); //simulating API call response.data
+store.dispatch({
+  type: "error",
+  payload: { message: "An error occured." },
 });
