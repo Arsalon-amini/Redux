@@ -1,7 +1,7 @@
 import { createAction, createReducer, createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 import { getAssignedBugs } from "./users";
-import { apiCallBegan } from './api';
+import { apiCallBegan } from "./api";
 
 let lastId = 0;
 
@@ -13,8 +13,12 @@ const slice = createSlice({
     lastFetch: null, //timestamp -> lastime called server (caching)
   },
   reducers: {
+    bugsRequested: (bugs, action) => {
+      bugs.loading = true;
+    },
     bugsRecieved: (bugs, action) => {
       bugs.list = action.payload;
+      bugs.loading = false;
     },
     bugAssignedToUser: (bugs, action) => {
       const { bugId, userId } = action.payload;
@@ -35,15 +39,23 @@ const slice = createSlice({
   },
 });
 
-export const { bugAdded, bugResolved, bugAssignedToUser, bugsRecieved } = slice.actions;
+export const {
+  bugAdded,
+  bugResolved,
+  bugAssignedToUser,
+  bugsRecieved,
+  bugsRequested,
+} = slice.actions;
 export default slice.reducer;
 
 //Action creators
 const url = "/bugs";
 
-export const loadBugs = () => apiCallBegan({
+export const loadBugs = () =>
+  apiCallBegan({
     url,
-    onSuccess: bugsRecieved.type
+    onStart: bugsRequested.type,
+    onSuccess: bugsRecieved.type,
   });
 
 export const getUnresolvedBugs = createSelector(
