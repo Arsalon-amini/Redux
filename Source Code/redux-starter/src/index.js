@@ -1,20 +1,10 @@
 import configureStore from "./store/configureStore";
-import {
-  bugAdded,
-  bugResolved,
-  bugAssignedToUser,
-  getBugsByUser,
-} from "./store/bugs";
-import { userAdded } from "./store/users";
-import { projectAdded, projectRemoved } from "./store/projects";
+import * as actions from "./store/api";
 
 const store = configureStore();
 
-store.dispatch({
-  type: "apiCallBegan",
-  payload: {
+store.dispatch(
+  actions.apiCallBegan({
     url: "/bugs",
-    onSuccess: "bugsRecieved",
-    onError: "apiRequestFailed",
-  },
-});
+    onSuccess: "bugsRecieved"  })
+);
