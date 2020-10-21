@@ -11,6 +11,10 @@ import { projectAdded, projectRemoved } from "./store/projects";
 const store = configureStore();
 
 store.dispatch({
-  type: "error",
-  payload: { message: "An error occured." },
+  type: "apiCallBegan",
+  payload: {
+    url: "/bugs",
+    onSuccess: "bugsRecieved",
+    onError: "apiRequestFailed",
+  },
 });
