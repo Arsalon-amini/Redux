@@ -2,9 +2,7 @@ import { createAction, createReducer, createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 import { getAssignedBugs } from "./users";
 import { apiCallBegan } from "./api";
-import moment from 'moment';
-
-let lastId = 0;
+import moment from "moment";
 
 const slice = createSlice({
   name: "bugs",
@@ -31,11 +29,7 @@ const slice = createSlice({
       bugs.list[index].userId = userId;
     },
     bugAdded: (bugs, action) => {
-      bugs.list.push({
-        id: ++lastId,
-        description: action.payload.description,
-        resolved: false,
-      });
+      bugs.list.push(action.payload);
     },
     bugResolved: (bugs, action) => {
       const index = bugs.list.findIndex((bug) => bug.id === action.payload.id);
@@ -60,8 +54,8 @@ const url = "/bugs";
 export const loadBugs = () => (dispatch, getState) => {
   const { lastFetch } = getState().entities.bugs;
 
-  const diffInMinutes = moment().diff(moment(lastFetch), 'minutes'); 
-  if(diffInMinutes < 10) return; 
+  const diffInMinutes = moment().diff(moment(lastFetch), "minutes");
+  if (diffInMinutes < 10) return;
 
   console.log(lastFetch);
 
@@ -80,6 +74,14 @@ export const getUnresolvedBugs = createSelector(
   (state) => state.entities.projects,
   (bugs, projects) => bugs.list.filter((bug) => !bug.resolved)
 );
+
+export const addBug = (bug) =>
+  apiCallBegan({
+    url,
+    method: "post",
+    data: bug,
+    onSuccess: bugAdded.type,
+  });
 
 export const getBugsByUser = (userId) =>
   createSelector(
