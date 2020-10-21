@@ -20,6 +20,9 @@ const slice = createSlice({
       bugs.list = action.payload;
       bugs.loading = false;
     },
+    bugsRequestFailed: (bugs, action) => {
+      bugs.loading = false;
+    },
     bugAssignedToUser: (bugs, action) => {
       const { bugId, userId } = action.payload;
       const index = bugs.list.findIndex((bug) => bug.id === bugId);
@@ -45,6 +48,7 @@ export const {
   bugAssignedToUser,
   bugsRecieved,
   bugsRequested,
+  bugsRequestFailed,
 } = slice.actions;
 export default slice.reducer;
 
@@ -56,6 +60,7 @@ export const loadBugs = () =>
     url,
     onStart: bugsRequested.type,
     onSuccess: bugsRecieved.type,
+    onError: bugsRequestFailed.type,
   });
 
 export const getUnresolvedBugs = createSelector(
