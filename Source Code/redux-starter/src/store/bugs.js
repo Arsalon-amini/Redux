@@ -69,12 +69,6 @@ export const loadBugs = () => (dispatch, getState) => {
   );
 };
 
-export const getUnresolvedBugs = createSelector(
-  (state) => state.entities.bugs,
-  (state) => state.entities.projects,
-  (bugs, projects) => bugs.list.filter((bug) => !bug.resolved)
-);
-
 export const addBug = (bug) =>
   apiCallBegan({
     url,
@@ -82,6 +76,21 @@ export const addBug = (bug) =>
     data: bug,
     onSuccess: bugAdded.type,
   });
+
+export const resolveBug = (id) =>
+  apiCallBegan({
+    url: url + "/" + id,
+    method: "patch",
+    data: { resolved: true },
+    onSuccess: bugResolved.type,
+  });
+
+//Selectors
+export const getUnresolvedBugs = createSelector(
+  (state) => state.entities.bugs,
+  (state) => state.entities.projects,
+  (bugs, projects) => bugs.list.filter((bug) => !bug.resolved)
+);
 
 export const getBugsByUser = (userId) =>
   createSelector(
