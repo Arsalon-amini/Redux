@@ -1,6 +1,6 @@
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { addBug, bugAdded } from "../bugs";
+import { addBug, bugAdded, getUnresolvedBugs } from "../bugs";
 import configureStore from "../configureStore";
 
 describe("bugsSlice", () => {
@@ -15,15 +15,12 @@ describe("bugsSlice", () => {
   const bugsSlice = () => store.getState().entities.bugs;
 
   it("should add bug to the store if it's saved to the server", async () => {
-    //Arrange
     const bug = { description: "a" };
     const savedBug = { ...bug, id: 1 };
     fakeAxios.onPost("/bugs").reply(200, savedBug);
 
-    //Act
     await store.dispatch(addBug(bug));
 
-    //Assert
     expect(bugsSlice().list).toContainEqual(savedBug);
   });
 
@@ -35,24 +32,18 @@ describe("bugsSlice", () => {
 
     expect(bugsSlice().list).toHaveLength(0);
   });
+
+describe("selectors", () => {
+  it("getUnresolvedBugs", () => {
+    const result = getUnresolvedBugs({
+      entities: {
+        bugs: {
+          list: [{ id: 1, resolved: true }, { id: 1 }, { id: 1 }],
+        }
+      }
+    });
+    expect(result).toHaveLength(2);
+  });
 });
 
-//Solidarity test (poor way)
-// describe("bugsSlice", () => {
-//   describe("action creators", () => {
-//     it("addBug", () => {
-//       const bug = { description: "a" };
-//       const result = addBug(bug); //calling our test function
-//       const expected = {
-//         type: apiCallBegan.type, //API middlware return
-//         payload: {
-//           url: "/bugs",
-//           method: "post",
-//           data: bug,
-//           onSuccess: bugAdded.type,
-//         },
-//       };
-//       expect(result).toEqual(expected);
-//     });
-//   });
-// });
+});
