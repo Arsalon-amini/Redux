@@ -70,32 +70,13 @@ export const loadBugs = () => (dispatch, getState) => {
   );
 };
 
-// export const addBug = bug => {
-//   try {
-//     const response = await axios.post(url, bug); //calling API without middleware
-//     dispatch(bugAdded(bug)); //onSuccess pass action to reducer
-//   } catch (error) {
-//     dispatch( { type: 'error' });
-//   }
-// }
-
-export const addBug = (bug) => async (dispatch, getState) => {
-  const response = axios.request({
-    baseUrl: "http://localhost:9001/api",
-    url: "/bugs",
+export const addBug = (bug) =>
+  apiCallBegan({
+    url,
     method: "post",
     data: bug,
+    onSuccess: bugAdded.type,
   });
-  dispatch(bugAdded(response.data));
-};
-
-// export const addBug = (bug) =>
-//   apiCallBegan({
-//     url,
-//     method: "post",
-//     data: bug,
-//     onSuccess: bugAdded.type,
-//   });
 
 export const resolveBug = (id) =>
   apiCallBegan({

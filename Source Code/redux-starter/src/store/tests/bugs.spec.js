@@ -1,13 +1,20 @@
+import axios from "axios";
+import MockAdapter from "axios-mock-adapter";
 import { addBug, bugAdded } from "../bugs";
 import configureStore from "../configureStore";
 
 describe("bugsSlice", () => {
+  //dispatch (addbug) => look at store (ignore implementation details)
   it("should handle the addBug action", async () => {
-    //dispatch (addbug) => look at store (ignore implementation details)
-    const store = configureStore(); //real store object with middleware, etc (don't care about)
     const bug = { description: "a" };
+    const savedBug = { ...bug, id: 1 };
+
+    const fakeAxios = new MockAdapter(axios);
+    fakeAxios.onPost("/bugs").reply(200, savedBug);
+
+    const store = configureStore();
     await store.dispatch(addBug(bug));
-    expect(store.getState().entities.bugs.list).toHaveLength(1); //matcher (check bugs array has 1)
+    expect(store.getState().entities.bugs.list).toContainEqual(savedBug);
   });
 });
 
