@@ -1,7 +1,7 @@
 import { createAction, createReducer, createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
 import { getAssignedBugs } from "./users";
-import axios from 'axios'; 
+import axios from "axios";
 import { apiCallBegan } from "./api";
 import moment from "moment";
 
@@ -75,17 +75,27 @@ export const loadBugs = () => (dispatch, getState) => {
 //     const response = await axios.post(url, bug); //calling API without middleware
 //     dispatch(bugAdded(bug)); //onSuccess pass action to reducer
 //   } catch (error) {
-//     dispatch( { type: 'error' }); 
+//     dispatch( { type: 'error' });
 //   }
 // }
 
-export const addBug = (bug) =>
-  apiCallBegan({
-    url,
+export const addBug = (bug) => async (dispatch, getState) => {
+  const response = axios.request({
+    baseUrl: "http://localhost:9001/api",
+    url: "/bugs",
     method: "post",
     data: bug,
-    onSuccess: bugAdded.type,
   });
+  dispatch(bugAdded(response.data));
+};
+
+// export const addBug = (bug) =>
+//   apiCallBegan({
+//     url,
+//     method: "post",
+//     data: bug,
+//     onSuccess: bugAdded.type,
+//   });
 
 export const resolveBug = (id) =>
   apiCallBegan({
