@@ -1,6 +1,6 @@
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { addBug, bugAdded, getUnresolvedBugs } from "../bugs";
+import { addBug, resolveBug, getUnresolvedBugs } from "../bugs";
 import configureStore from "../configureStore";
 
 describe("bugsSlice", () => {
@@ -21,13 +21,35 @@ describe("bugsSlice", () => {
     },
   });
 
+  it("should mark bug as resolved if saved to the server", async () => {
+    //Arrange
+    fakeAxios.onPatch("/bugs/1").reply(200, { id: 1, resolved: true });
+    fakeAxios.onPost("/bugs").reply(200, { id: 1 });
+    //Act
+    await store.dispatch(addBug({}));
+    await store.dispatch(resolveBug(1));
+    //Assert
+    expect(bugsSlice().list[0].resolved).toBe(true);
+  });
+
+  it("should not mark bug as resolved if not saved to the server", async () => {
+    fakeAxios.onPatch("/bugs/1").reply(500);
+    fakeAxios.onPost("/bugs").reply(200, { id: 1 });
+
+    await store.dispatch(addBug({}));
+    await store.dispatch(resolveBug(1));
+
+    expect(bugsSlice().list[0].resolved).not.toBe(true);
+  });
+
   it("should add bug to the store if it's saved to the server", async () => {
+    //Arrange
     const bug = { description: "a" };
     const savedBug = { ...bug, id: 1 };
     fakeAxios.onPost("/bugs").reply(200, savedBug);
-
+    //Act
     await store.dispatch(addBug(bug));
-
+    //Assert
     expect(bugsSlice().list).toContainEqual(savedBug);
   });
 
@@ -41,7 +63,7 @@ describe("bugsSlice", () => {
   });
 
   describe("selectors", () => {
-    it("getUnresolvedBugs", () => {
+    it("should return all unresolved bugs", () => {
       const state = createState();
       state.entities.bugs.list = [
         { id: 1, resolved: true },
@@ -49,9 +71,9 @@ describe("bugsSlice", () => {
         { id: 1 },
       ];
 
-      const result = getUnresolvedBugs(state);
+      const result = getUnresolvedBugs(state); //invoke
 
-      expect(result).toHaveLength(2);
+      expect(result).toHaveLength(2); //assert
     });
   });
 });
