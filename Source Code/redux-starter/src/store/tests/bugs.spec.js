@@ -1,6 +1,6 @@
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { addBug, resolveBug, getUnresolvedBugs } from "../bugs";
+import { loadBugs, addBug, resolveBug, getUnresolvedBugs } from "../bugs";
 import configureStore from "../configureStore";
 
 describe("bugsSlice", () => {
@@ -19,6 +19,55 @@ describe("bugsSlice", () => {
         list: [],
       },
     },
+  });
+
+  describe("loading bugs", () => {
+    describe("if the bugs exist in the cache", () => {
+      it("they should not be fetched from the server again", async () => {
+        fakeAxios.onGet("/bugs").reply(200, [{ id: 1 }]); //Arrange
+
+        await store.dispatch(loadBugs()); //Act
+        await store.dispatch(loadBugs()); 
+
+        expect(fakeAxios.history.get.length).toBe(1); //Assert
+      })
+    });
+    describe("if the bugs don't exist in the cache", () => {
+      it("they should be fetched from server and put in the store", async () => {
+        fakeAxios.onGet("/bugs").reply(200, [{ id: 1 }]); //Arrange
+
+        await store.dispatch(loadBugs()); //Act
+
+        expect(bugsSlice().list).toHaveLength(1); //Assert
+      })
+      describe("loading indicator", () => {
+        it("should be true while fetching bugs", () => {
+          fakeAxios.onGet("/bugs").reply(() => {
+            expect(bugsSlice().loading).toBe(true); //arrange + assertion (executed before request completes)
+            return [200, [{ id: 1 }]];
+          });
+
+          store.dispatch(loadBugs()); //Act
+        });
+        it("should be false after the bugs are fetched", async () => {
+      
+          fakeAxios.onGet("/bugs").reply(200, [ { id:1 } ]); 
+      
+          await store.dispatch(loadBugs()); 
+       
+          expect(bugsSlice().loading).toBe(false); 
+        });
+
+        it("should be false if server returns an error", async () => {
+          //arrange
+          fakeAxios.onGet("/bugs").reply(500); 
+          //act
+          await store.dispatch(loadBugs()); 
+          //assert
+          expect(bugsSlice().loading).toBe(false); 
+        });
+      });
+    });
   });
 
   it("should mark bug as resolved if saved to the server", async () => {
