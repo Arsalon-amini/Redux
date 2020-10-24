@@ -1,18 +1,16 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.css";
-import Bugs from "./components/Bugs";
 import configureStore from "./store/configureStore";
-import StoreContext from "./contexts/storeContext";
+import { Provider } from 'react-redux'; 
+import Bugs from "./components/Bugs";
 
 const store = configureStore();
 
 function App() {
   return (
-    <StoreContext.Provider value = {store}>
-      {" "}
-      <Bugs />{" "}
-    </StoreContext.Provider>
+    <Provider store={store}>
+      <Bugs />
+    </Provider>
   );
 }
 
